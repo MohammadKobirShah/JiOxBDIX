@@ -5,27 +5,32 @@ const { SocksProxyAgent } = require('socks-proxy-agent');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const targetHost = 'https://live.dinesh29.com';
+// ✅ Correct Upstream Base URL
+const proxyHost = 'https://live.dinesh29.com.np/stream';
 
-const proxyAgent = new SocksProxyAgent('socks5h://@bdiix_bypass:@bdiix_bypass@circle.bypassempire.com:1080');
+const proxyAgent = new SocksProxyAgent(
+  'socks5h://@bdiix_bypass:@bdiix_bypass@circle.bypassempire.com:1080'
+);
 
-app.use('/stream/jiotv/:channel/:playlist', (req, res, next) => {
+// ✅ Handle both /jiotv/... and /stream/jiotv/...
+app.use(['/stream/jiotv/:channel/:playlist', '/jiotv/:channel/:playlist'], (req, res, next) => {
   const { channel, playlist } = req.params;
-  const targetUrl = `${targetHost}/stream/jiotv/${channel}/${playlist}`;
+
+  const target = `${proxyHost}/${channel}/${playlist}`;
 
   return createProxyMiddleware({
-    target: targetUrl,
+    target,
     changeOrigin: true,
-    selfHandleResponse: false,
     agent: proxyAgent,
+    selfHandleResponse: false,
     pathRewrite: () => '',
-    onProxyReq: (proxyReq, req, res) => {
-      proxyReq.setHeader('Origin', 'https://live.dinesh29.com');
-      proxyReq.setHeader('User-Agent', 'RANAPK');
+    onProxyReq: (proxyReq) => {
+      proxyReq.setHeader('Origin', 'https://live.dinesh29.com.np');
+      proxyReq.setHeader('User-Agent', 'Mozilla/5.0');
     },
   })(req, res, next);
 });
 
 app.listen(PORT, () => {
-  console.log(`🔥 Proxy running on http://localhost:${PORT}`);
+  console.log(`🌀 SOCKS5 Reverse Proxy running at http://localhost:${PORT}`);
 });
