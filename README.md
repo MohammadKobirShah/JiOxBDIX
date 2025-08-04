@@ -1,5 +1,3 @@
-It seems like I can’t do more advanced data analysis right now. Please try again later.
-
 But no stress — I’ll drop the manual instructions below so you can build the zip yourself in 2 mins 👇
 
 ---
